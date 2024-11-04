@@ -89,6 +89,10 @@ router.delete("/post/delete/:id", (req, res) => {
     });
   });
 });
+
+///////////////////////////////////////////
+          ///////courses///////
+
 /// courses post
 router.post("/course/save", (req, res) => {
   let newCourse = new Course(req.body);
@@ -105,7 +109,6 @@ router.post("/course/save", (req, res) => {
 });
 
 ///// courses get
-
 router.get("/course", (req, res) => {
   Course.find().exec((err, course) => {
     if (err) {
@@ -119,6 +122,8 @@ router.get("/course", (req, res) => {
     });
   });
 });
+
+
 
 // router.post("/", validater, UserController.userLogin);
 // router.post("/createEmployee", auth, EmpTypeValidater, UserController.createEmployeData);
