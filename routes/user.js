@@ -123,6 +123,23 @@ router.get("/course", (req, res) => {
   });
 });
 
+//delet
+router.delete("/course/delete/:id", (req, res) => {
+  Course.findByIdAndRemove(req.params.id, (err, deletedPost) => {
+    if (err) {
+      return res.status(400).json({
+        message: "Deletion unsuccessful",
+        err,
+      });
+    }
+    return res.json({
+      message: "Deleted successfully",
+      deletedPost,
+    });
+  });
+});
+
+
 
 
 // router.post("/", validater, UserController.userLogin);
