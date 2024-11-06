@@ -139,6 +139,26 @@ router.delete("/course/delete/:id", (req, res) => {
   });
 });
 
+//post update
+router.put("/course/update/:id", (req, res) => {
+  Course.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: req.body,
+    },
+    (err, post) => {
+      if (err) {
+        return res.status(400).json({
+          error: err,
+        });
+      }
+      return res.status(200).json({
+        success: "update succesfully",
+      });
+    }
+  );
+});
+
 
 
 
