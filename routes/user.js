@@ -22,6 +22,39 @@ const {
 const { SalaryValidater } = require("../middleware/SalaryValidater");
 const { AllowanceValidater } = require("../middleware/AllowanceValidater");
 const Course = require("../model/Course");
+const Admin = require("../model/Admin");
+
+///User Post
+router.post("/User", (req, res) => {
+  let newPost = new Admin(req.body);
+
+  newPost.save((err) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    return res.status(200).json({
+      success: "Posts saved successfully",
+    });
+  });
+});
+
+router.post("/User/adminLogin", (req, res) => {
+  let newPost = new Admin(req.body);
+
+  newPost.save((err) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    return res.status(200).json({
+      success: "Posts saved successfully",
+    });
+  });
+});
+
 
 //Post
 router.post("/post/save", (req, res) => {
