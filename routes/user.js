@@ -23,9 +23,11 @@ const { SalaryValidater } = require("../middleware/SalaryValidater");
 const { AllowanceValidater } = require("../middleware/AllowanceValidater");
 const Course = require("../model/Course");
 const Admin = require("../model/Admin");
+const { where } = require("sequelize");
+const { tokenLife } = require("@adeona-tech/common/config/config");
 
 ///User Post
-router.post("/User", (req, res) => {
+router.post("/AdminUserCreation", (req, res) => {
   let newPost = new Admin(req.body);
 
   newPost.save((err) => {
@@ -40,21 +42,42 @@ router.post("/User", (req, res) => {
   });
 });
 
-router.post("/User/adminLogin", (req, res) => {
-  let newPost = new Admin(req.body);
+router.post("/User/adminLogin", async (req, res, next) => {
+  try {
+    const userTrue = await Admin.findOne({ email: req.body.email });
+    const bcrypt = require("bcrypt");
 
-  newPost.save((err) => {
-    if (err) {
-      return res.status(400).json({
-        error: err,
-      });
+    if (
+      !userTrue ||
+      !(await bcrypt.compare(req.body.password, userTrue.password))
+    ) {
+      throw new Error("Invalid email or password");
     }
-    return res.status(200).json({
-      success: "Posts saved successfully",
-    });
-  });
-});
 
+    console.log("my user is", req.body.email);
+    console.log("find user is", userTrue);
+
+    if (!userTrue) throw Error("User Not Found");
+
+    res.status(200).json({
+      status: "Success",
+      Comment: "User Login Authentication!",
+      Error: Error,
+      Data: {
+        email: req.body.email,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      status: "fail",
+      comment: "login fail!, enter correct email",
+      data: {
+        Error: error.message,
+      },
+    });
+  }
+});
 
 //Post
 router.post("/post/save", (req, res) => {
@@ -124,7 +147,7 @@ router.delete("/post/delete/:id", (req, res) => {
 });
 
 ///////////////////////////////////////////
-          ///////courses///////
+///////courses///////
 
 /// courses post
 router.post("/course/save", (req, res) => {
@@ -191,9 +214,6 @@ router.put("/course/update/:id", (req, res) => {
     }
   );
 });
-
-
-
 
 // router.post("/", validater, UserController.userLogin);
 // router.post("/createEmployee", auth, EmpTypeValidater, UserController.createEmployeData);
