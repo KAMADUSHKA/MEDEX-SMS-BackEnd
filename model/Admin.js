@@ -21,6 +21,10 @@ const adminSchema = new mongoose.Schema({
         type: Date,
         default: null,
     },
+    isAdmin: {
+      type: Boolean,
+      default: false, 
+    },
    
   });
   

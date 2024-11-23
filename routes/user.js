@@ -56,6 +56,7 @@ router.post("/User/adminLogin", async (req, res, next) => {
     if (req.body.password !== userTruePassword)
       throw new Error("User Password is invalid");
     const accountStatus = userTrue.account_lock;
+    const isAdmin = userTrue.isAdmin
 
     if (accountStatus == 0) {
       const token = jwt.sign(
@@ -70,6 +71,7 @@ router.post("/User/adminLogin", async (req, res, next) => {
         token: token,
         data: {
           email: req.body.email,
+          role:isAdmin
         },
       });
     }
