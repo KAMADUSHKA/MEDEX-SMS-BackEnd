@@ -61,8 +61,9 @@ router.post("/User/adminLogin", async (req, res, next) => {
       const token = jwt.sign(
         { email: req.body.email }, // Payload (data you want to encode in the token)
         "your_secret_key", // Secret key (use a strong, secure key and keep it private)
-        { expiresIn: "650h" } // Optional: Token expiration time
+        { expiresIn: "1h" } // Optional: Token expiration time
       );
+      console.log("token is:",token)
       res.status(200).json({
         status: "Success",
         Comment: "User Login Authentication!",
