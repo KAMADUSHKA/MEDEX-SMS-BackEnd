@@ -28,6 +28,8 @@ const { tokenLife } = require("@adeona-tech/common/config/config");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const ZoomOnlineSessions = require("../model/ZoomOnlineSessions");
+const ZoomRecodings = require("../model/ZoomRecordings");
+const ZoomRecordings = require("../model/ZoomRecordings");
 
 ///User Post
 router.post("/AdminUserCreation", (req, res) => {
@@ -224,7 +226,7 @@ router.post("/OnlineSessions/zoom", (req, res) => {
       });
     }
     return res.status(200).json({
-      success: "Subject saved successfully",
+      success: "link saved successfully",
     });
   });
 });
@@ -262,7 +264,7 @@ router.put("/OnlineSessions/zoom/:id", async (req, res) => {
   }
 });
 
-///// courses get//////
+///// zoom session get//////
 router.get("/OnlineSessions/zoom", (req, res) => {
   ZoomOnlineSessions.find().exec((err, ZoomOnlineSessions) => {
     if (err) {
@@ -276,6 +278,38 @@ router.get("/OnlineSessions/zoom", (req, res) => {
     });
   });
 });
+
+////////////////////////////////////////////////////////
+///// Zoom recording /////
+router.post("/OnlineRecordings/zoom", (req, res) => {
+  let newCourse = new ZoomRecordings(req.body);
+  newCourse.save((err) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    return res.status(200).json({
+      success: "link saved successfully",
+    });
+  });
+});
+
+///// zoom session get//////
+router.get("/OnlineRecordings/zoom", (req, res) => {
+  ZoomRecordings.find().exec((err, ZoomRecordings ) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      CoursesData: ZoomRecordings,
+    });
+  });
+});
+
 
 
 // router.post("/", validater, UserController.userLogin);
