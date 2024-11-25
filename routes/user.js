@@ -27,6 +27,7 @@ const { where } = require("sequelize");
 const { tokenLife } = require("@adeona-tech/common/config/config");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const ZoomOnlineSessions = require("../model/ZoomOnlineSessions");
 
 ///User Post
 router.post("/AdminUserCreation", (req, res) => {
@@ -210,6 +211,72 @@ router.put("/course/update/:id", (req, res) => {
     }
   );
 });
+
+////////////////////////////////////////////////////////
+///// Zoom Sessions /////
+
+router.post("/OnlineSessions/zoom", (req, res) => {
+  let newCourse = new ZoomOnlineSessions(req.body);
+  newCourse.save((err) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    return res.status(200).json({
+      success: "Subject saved successfully",
+    });
+  });
+});
+
+///// Zoom Sessions update /////
+router.put("/OnlineSessions/zoom/:id", async (req, res) => {
+  try {
+    // Extract the ID of the subject and the new link from the request
+    const subjectId = req.params.id;
+    const newLink = req.body;
+
+    // Validate the new link structure
+    if (!newLink.title || !newLink.url ) {
+      return res.status(400).json({ error: "Invalid link data" });
+    }
+
+    // Update the subject by pushing the new link to the links array
+    const updatedSubject = await ZoomOnlineSessions.findByIdAndUpdate(
+      subjectId,
+      { $push: { links: newLink } }, 
+      { new: true, runValidators: true } 
+    );
+
+    // If the subject is not found
+    if (!updatedSubject) {
+      return res.status(404).json({ error: "Subject not found" });
+    }
+
+    return res.status(200).json({
+      success: "Link added successfully",
+      data: updatedSubject,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+///// courses get//////
+router.get("/OnlineSessions/zoom", (req, res) => {
+  ZoomOnlineSessions.find().exec((err, ZoomOnlineSessions) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      CoursesData: ZoomOnlineSessions,
+    });
+  });
+});
+
 
 // router.post("/", validater, UserController.userLogin);
 // router.post("/createEmployee", auth, EmpTypeValidater, UserController.createEmployeData);
