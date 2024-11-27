@@ -67,4 +67,19 @@ app.all("*", async (req, res, next) => {
 });
 app.use(errorHandler);
 
+const cors = require("cors");
+
+// Allow all origins (for development purposes)
+app.use(cors());
+
+// Or restrict to your frontend's origin
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+  })
+);
+
+
 module.exports = app;

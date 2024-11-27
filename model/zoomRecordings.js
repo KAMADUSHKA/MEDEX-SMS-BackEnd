@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 const linkSchema = new mongoose.Schema({
     title:{
         type:String,
-        required:true
+        // required:true
     },
     url:{
         type:String,
-        required:true,
+        // required:true,
     },
     description:{
         type:String
@@ -17,11 +17,11 @@ const linkSchema = new mongoose.Schema({
 const recordingsSubjectSchema = new mongoose.Schema({
     subject: {
         type:String,
-        required:true
+        // required:true
     },
     links: {
         type: [linkSchema],
-        required:true
+        // required:true
     }
 });
 
