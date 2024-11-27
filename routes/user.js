@@ -295,7 +295,7 @@ router.post("/OnlineRecordings/zoom", (req, res) => {
       });
     }
     return res.status(200).json({
-      success: "link saved successfully",
+      success: "recording Subject saved successfully",
     });
   });
 });
