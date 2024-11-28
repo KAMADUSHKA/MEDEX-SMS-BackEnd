@@ -28,8 +28,7 @@ const { tokenLife } = require("@adeona-tech/common/config/config");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const ZoomOnlineSessions = require("../model/ZoomOnlineSessions");
-const ZoomRecodings = require("../model/ZoomRecordings");
-const ZoomRecordings = require("../model/ZoomRecordings");
+const ZoomRecordings = require("../model/zoomRecordings");
 
 ///User Post
 router.post("/AdminUserCreation", (req, res) => {
