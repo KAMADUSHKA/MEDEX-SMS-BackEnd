@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node index.js",
     "test": "env-cmd -f ./env-config/dev.env jest --watchAll --runInBand",
     "dev": "env-cmd -f ./env-config/dev.env nodemon ./index.js"
   },
