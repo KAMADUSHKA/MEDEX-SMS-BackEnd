@@ -231,6 +231,55 @@ router.post("/OnlineSessions/zoom", (req, res) => {
   });
 });
 
+// zoom session subject delete
+router.delete("/zoomSession/subject/delete/:id", (req, res) => {
+  ZoomOnlineSessions.findByIdAndRemove(req.params.id, (err, deletedPost) => {
+    if (err) {
+      return res.status(400).json({
+        message: "Deletion unsuccessful",
+        err,
+      });
+    }
+    return res.json({
+      message: "Deleted successfully",
+      deletedPost,
+    });
+  });
+});
+
+// zoom session lecture delete
+router.delete("/zoomSession/lecture/delete/:subjectId/:lectureId", (req, res) => {
+  const { subjectId, lectureId } = req.params;
+
+  ZoomOnlineSessions.findByIdAndUpdate(
+    subjectId,
+    {
+      $pull: {
+        links: { _id: lectureId }, 
+      },
+    },
+    { new: true }, 
+    (err, updatedSubject) => {
+      if (err) {
+        return res.status(400).json({
+          message: "Failed to delete the link",
+          err,
+        });
+      }
+      if (!updatedSubject) {
+        return res.status(404).json({
+          message: "Subject or link not found",
+        });
+      }
+      return res.json({
+        message: "Link deleted successfully",
+        updatedSubject,
+      });
+    }
+  );
+});
+
+
 ///// Zoom Sessions update /////
 router.post("/OnlineSessions/zoomLink/:id", async (req, res) => {
   try {
@@ -267,8 +316,6 @@ router.post("/OnlineSessions/zoomLink/:id", async (req, res) => {
   }
 });
 
-
-
 ///// zoom session get//////
 router.get("/OnlineSessions/zoom", (req, res) => {
   ZoomOnlineSessions.find().exec((err, ZoomOnlineSessions) => {
@@ -299,6 +346,55 @@ router.post("/OnlineRecordings/zoom", (req, res) => {
     });
   });
 });
+
+// recording subject delete
+router.delete("/recording/subject/delete/:id", (req, res) => {
+  ZoomRecordings.findByIdAndRemove(req.params.id, (err, deletedPost) => {
+    if (err) {
+      return res.status(400).json({
+        message: "Delete unsuccessful",
+        err,
+      });
+    }
+    return res.json({
+      message: "Deleted successfully",
+      deletedPost,
+    });
+  });
+});
+
+// recording lecture delete
+router.delete("/recording/lecture/delete/:subjectId/:lectureId", (req, res) => {
+  const { subjectId, lectureId } = req.params;
+
+  ZoomRecordings.findByIdAndUpdate(
+    subjectId,
+    {
+      $pull: {
+        links: { _id: lectureId }, 
+      },
+    },
+    { new: true }, 
+    (err, updatedSubject) => {
+      if (err) {
+        return res.status(400).json({
+          message: "Failed to delete the link",
+          err,
+        });
+      }
+      if (!updatedSubject) {
+        return res.status(404).json({
+          message: "Subject or link not found",
+        });
+      }
+      return res.json({
+        message: "Link deleted successfully",
+        updatedSubject,
+      });
+    }
+  );
+});
+
 
 ///// Zoom Recording update /////
 router.post("/OnlineSessions/zoomRecording/:id", async (req, res) => {
