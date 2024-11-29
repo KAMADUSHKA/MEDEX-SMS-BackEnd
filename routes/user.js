@@ -21,7 +21,7 @@ const Admin = require("../model/Admin");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const ZoomOnlineSessions = require("../model/ZoomOnlineSessions");
-const ZoomRecordings = require("../model/zoomRecordings"); // Fixed import case sensitivity
+const ZoomRecordings = require("../model/ZoomRecordings"); // Fixed import case sensitivity
 
 /// Admin User Creation
 router.post("/AdminUserCreation", (req, res) => {
@@ -170,7 +170,7 @@ router.post("/OnlineSessions/zoom", (req, res) => {
   });
 });
 
-<<<<<<< HEAD
+
 // zoom session subject delete
 router.delete("/zoomSession/subject/delete/:id", (req, res) => {
   ZoomOnlineSessions.findByIdAndRemove(req.params.id, (err, deletedPost) => {
@@ -256,9 +256,8 @@ router.post("/OnlineSessions/zoomLink/:id", async (req, res) => {
   }
 });
 
-///// zoom session get//////
-=======
->>>>>>> 14e4715377059d54ed21dcdbee81d7f8ce9c05f3
+
+ 
 router.get("/OnlineSessions/zoom", (req, res) => {
   ZoomOnlineSessions.find().exec((err, sessions) => {
     if (err) {
@@ -281,7 +280,7 @@ router.post("/OnlineRecordings/zoom", (req, res) => {
   });
 });
 
-<<<<<<< HEAD
+
 // recording subject delete
 router.delete("/recording/subject/delete/:id", (req, res) => {
   ZoomRecordings.findByIdAndRemove(req.params.id, (err, deletedPost) => {
@@ -368,8 +367,8 @@ router.post("/OnlineSessions/zoomRecording/:id", async (req, res) => {
 });
 
 ///// zoom session get//////
-=======
->>>>>>> 14e4715377059d54ed21dcdbee81d7f8ce9c05f3
+
+
 router.get("/OnlineRecordings/zoom", (req, res) => {
   ZoomRecordings.find().exec((err, recordings) => {
     if (err) {
