@@ -26,4 +26,4 @@ const recordingsSubjectSchema = new mongoose.Schema({
 });
 
 
-module.exports = mongoose.model('zoomRecordings',recordingsSubjectSchema);
+module.exports = mongoose.model('ZoomRecordings',recordingsSubjectSchema);
