@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "nodemon index.js",
     "test": "env-cmd -f ./env-config/dev.env jest --watchAll --runInBand",
     "dev": "env-cmd -f ./env-config/dev.env nodemon ./index.js"
   },
@@ -30,11 +30,9 @@
     "mysql2": "^2.1.0",
     "nodemon": "^2.0.2",
     "path": "^0.12.7",
-    "plyr": "^3.7.8",
     "sequelize": "^5.21.10"
   },
   "devDependencies": {
-    "@flydotio/dockerfile": "^0.5.9",
     "env-cmd": "^10.1.0",
     "jest": "^27.1.1",
     "supertest": "^6.1.6"
