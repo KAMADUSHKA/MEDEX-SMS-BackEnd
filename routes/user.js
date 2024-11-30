@@ -31,22 +31,8 @@ const ZoomOnlineSessions = require("../model/ZoomOnlineSessions");
 // const ZoomRecodings = require("../model/ZoomRecordings");
 const ZoomRecordings = require("../model/zoomRecordings");
 
-///User Post
-router.post("/AdminUserCreation", (req, res) => {
-  let newPost = new Admin(req.body);
-
-  newPost.save((err) => {
-    if (err) {
-      return res.status(400).json({
-        error: err,
-      });
-    }
-    return res.status(200).json({
-      success: "Posts saved successfully",
-    });
-  });
-});
-
+////////////////////////
+/////admin main
 router.post("/User/adminLogin", async (req, res, next) => {
   try {
     const userTrue = await Admin.findOne({ email: req.body.email });
@@ -89,6 +75,61 @@ router.post("/User/adminLogin", async (req, res, next) => {
     });
   }
 }); 
+
+/////update pasword
+router.post("/User/passwordUpdate", async (req, res, next) => {
+  try {
+    const user = await Admin.findOne({ email: req.body.email });
+    const updatedPassword = req.body.password
+
+    console.log("my user is", req.body.email);
+    console.log("find user is", user);
+    console.log("my user new password is", updatedPassword);
+
+    if (!user) throw Error("User Not Found");
+
+    user.password = updatedPassword;
+    await user.save();
+    
+
+      res.status(200).json({
+        status: "Success",
+        Comment: "User password update successfully!",
+        data: {
+          email: req.body.email,
+        },
+      });
+    
+  } catch (error) {
+    console.log("Error during login:", error);
+    res.status(400).json({
+      status: "fail",
+      comment: "User password Update unsuccessfully",
+      data: {
+        error: error.message,
+      },
+    });
+  }
+}); 
+
+
+
+///User Post
+router.post("/AdminUserCreation", (req, res) => {
+  let newPost = new Admin(req.body);
+
+  newPost.save((err) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    return res.status(200).json({
+      success: "Posts saved successfully",
+    });
+  });
+});
+
 
 //////////////////////////////////////////////////
 
