@@ -112,6 +112,46 @@ router.post("/User/passwordUpdate", async (req, res, next) => {
   }
 }); 
 
+/////Delet user
+router.delete("/User/delete", async (req, res, next) => {
+  try {
+
+    console.log("wwwwwwwwwwwwwwww",req.body)
+    const user = await Admin.findOne({ email: req.body.email });
+    const Password = req.body.password
+
+    console.log("my user is", req.body.email);
+    console.log("find user is", user);
+    console.log("my user new password is", Password);
+    const userTruePassword = await user.password;
+    console.log("my user db password is", userTruePassword);
+    if (!user) throw Error("User Not Found");
+    if (req.body.password !== userTruePassword)
+      throw new Error("User Password is invalid");
+
+    await Admin.deleteOne({ email: req.body.email });
+   
+
+      res.status(200).json({
+        status: "Success",
+        Comment: "User Delete successfully!",
+        data: {
+          email: req.body.email,
+        },
+      });
+    
+  } catch (error) {
+    console.log("Error during login:", error);
+    res.status(400).json({
+      status: "fail",
+      comment: "User delete unsuccessfully",
+      data: {
+        error: error.message,
+      },
+    });
+  }
+});
+
 
 
 ///User Post
