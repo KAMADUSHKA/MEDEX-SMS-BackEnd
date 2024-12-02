@@ -1,22 +1,22 @@
-const User = require("../model/user");
-const Card = require("../model/cards");
-const tableData = require("../model/table");
-const { body, validationResult } = require("express-validator");
-const config = require("@adeona-tech/common").config;
-const jwt = require("jsonwebtoken");
-const admin = require("../model/user");
+// const User = require("../model/user");
+// const Card = require("../model/cards");
+// const tableData = require("../model/table");
+// const { body, validationResult } = require("express-validator");
+// const config = require("@adeona-tech/common").config;
+// const jwt = require("jsonwebtoken");
+// const admin = require("../model/user");
 
-const bcrypt = require("bcryptjs");
-const Employee = require("../model/Employee");
-const EmploymentTypeSeq = require("../model/EmploymentType");
-const DepartmentSeq = require("../model/Departments");
-const WorkingLocationsSeq = require("../model/WorkingLocation");
-const JobPositionSeq = require("../model/JobPosition");
-const DepartureEmployeeSeq = require("../model/DepartureEmployee");
-const SalarySeq = require("../model/Salary");
-const AllowanceSeq = require("../model/Allowance");
-require("dotenv").config();
-const expiresIn = process.env.expiresIn;
+// const bcrypt = require("bcryptjs");
+// const Employee = require("../model/Employee");
+// const EmploymentTypeSeq = require("../model/EmploymentType");
+// const DepartmentSeq = require("../model/Departments");
+// const WorkingLocationsSeq = require("../model/WorkingLocation");
+// const JobPositionSeq = require("../model/JobPosition");
+// const DepartureEmployeeSeq = require("../model/DepartureEmployee");
+// const SalarySeq = require("../model/Salary");
+// const AllowanceSeq = require("../model/Allowance");
+// require("dotenv").config();
+// const expiresIn = process.env.expiresIn;
 
 // exports.userLogin = async (req, res, next) => {
 //   try {

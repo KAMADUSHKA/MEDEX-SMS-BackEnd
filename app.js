@@ -1,86 +1,54 @@
 const express = require("express");
-const bodyParse = require("body-parser");
+const bodyParser = require("body-parser");
+const cookieSession = require("cookie-session");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const { errorHandler, NotFoundError } = require("@adeona-tech/common");
+require("dotenv").config(); // Load environment variables
+
 const app = express();
 
-const path = require("path");
-const errorHandler = require("@adeona-tech/common").errorHandler;
-const NotFoundError = require("@adeona-tech/common").NotFoundError;
-const userRoutes = require("./routes/user");
-const cookieSession = require("cookie-session");
-const Mongoose = require("mongoose");
-const { default: mongoose } = require("mongoose");
-const bodyParser = require("body-parser");
-// const postRoutes = require('./routes/post');
+const DB_URL = process.env.MONGO_URI || "mongodb+srv://SampleUser1:SamplePW456@clusterforlms.amnj1.mongodb.net/LMS?retryWrites=true&w=majority&appName=ClusterForLMS";
 
+// Middleware
 app.use(bodyParser.json());
-app.use(bodyParse.urlencoded({ extended: false }));
-app.set("trust proxy", true); // trust first proxy
-// app.use(postRoutes);
-
-const DB_URL =
-  "mongodb+srv://SampleUser1:SamplePW456@clusterforlms.amnj1.mongodb.net/LMS?retryWrites=true&w=majority&appName=ClusterForLMS";
-
-const database = (module.exports = () => {
-  const connectionParams = {
-    useNewUrlParser: true,
-    useUnifideTechnology: true,
-  };
-  try {
-    Mongoose.connect(DB_URL);
-    console.log("mongodb connect succes");
-  } catch (error) {
-    console.log(error);
-    console.log("mongodb connection fail");
-  }
-});
-database();
-
-//Third-party middleware
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   cookieSession({
     signed: false,
-    // secure: true,
   })
 );
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization,RefreshToken,RegisterToken,VerifyMobileToken,ChangePasswordToken,AddNewPasswordtoken,AddVerifyNewPasswordtoken,AdminAuthorization,GetTwoStepAuthToken"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PATCH, DELETE, OPTIONS"
-  );
-  next();
-});
+// CORS
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || "*",
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
+// Static files
 app.use("/image", express.static("image"));
-// app.use('/middleware', express.static('middleware'));
 
-//user routes
+// MongoDB Connection
+const database = () => {
+  try {
+    mongoose.connect(DB_URL); // No need for deprecated options
+    console.log("MongoDB connected successfully");
+  } catch (error) {
+    console.log("MongoDB connection failed:", error);
+  }
+};
+database();
 
-app.use("/api/v1/users", userRoutes);
+// Routes
+app.use("/api/v1/users", require("./routes/user"));
+
+// Error handling
 app.all("*", async (req, res, next) => {
   next(new NotFoundError());
 });
 app.use(errorHandler);
-
-const cors = require("cors");
-
-// Allow all origins (for development purposes)
-app.use(cors());
-
-// Or restrict to your frontend's origin
-app.use(
-  cors({
-    origin: "http://localhost:3000", // Frontend URL
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
-    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
-  })
-);
-
-
 
 module.exports = app;
