@@ -30,7 +30,8 @@ const bcrypt = require("bcryptjs");
 const ZoomOnlineSessions = require("../model/ZoomOnlineSessions");
 // const ZoomRecodings = require("../model/ZoomRecordings");
 const ZoomRecordings = require("../model/zoomRecordings");
-const CourseResource = require("../model/lectureMaterial")
+const CourseResource = require("../model/lectureMaterial");
+const lectureMaterial = require("../model/lectureMaterial");
 
 ////////////////////////
 /////admin main
@@ -551,9 +552,9 @@ router.post('/resources/upload', upload.single('file'), async (req, res) => {
     const { courseName, materialName, materialType, materialDescription } = req.body;
 
     // Validate required fields
-    if (!courseName || !materialName || !materialType || !materialDescription) {
-      return res.status(400).json({ error: 'All fields are required!' });
-    }
+    // if (!courseName || !materialName || !materialType || !materialDescription) {
+    //   return res.status(400).json({ error: 'All fields are required!' });
+    // }
 
     // Create a new lecture material object
     const lectureMaterial = {
@@ -583,12 +584,81 @@ router.post('/resources/upload', upload.single('file'), async (req, res) => {
 
     res.status(200).json({
       message: 'Lecture material uploaded and saved successfully!',
-      courseResource,
+      data:courseResource,
     });
   } catch (err) {
     res.status(500).json({ error: 'An error occurred', details: err.message });
   }
 });
+
+//////////////// paid student add 
+router.post('/resources/paid-students', async (req, res) => {
+  try {
+    // Extract data from the request body
+    const { courseName, studentId, email } = req.body;
+
+    // Validate required fields
+    if (!courseName || !studentId || !email) {
+      return res.status(400).json({ error: 'All fields are required!' });
+    }
+
+    // Find the course by name
+    let courseResource = await CourseResource.findOne({ courseName });
+
+    if (!courseResource) {
+      return res.status(404).json({ error: 'Course not found!' });
+    }
+
+    // Check if the student already exists
+    const studentExists = courseResource.paidStudents.some(
+      (student) => student.studentId === studentId
+    );
+
+    if (studentExists) {
+      return res.status(400).json({ error: 'Student is already added!' });
+    }
+
+    // Create a new student object
+    const newStudent = {
+      studentId,
+      studentName,
+      email,
+    };
+
+    // Add the student to the paidStudents array
+    courseResource.paidStudents.push(newStudent);
+
+    // Save the updated document
+    await courseResource.save();
+
+    res.status(200).json({
+      message: 'Student added successfully!',
+      data: courseResource,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'An error occurred', details: err.message });
+  }
+});
+
+
+/// get Resources
+router.get("/resources",(req, res) => {
+  lectureMaterial.find().exec((err, lectureMaterial) => {
+    // console.log("11111111")
+    if(err) {
+      // console.log("111111112222222222")
+      return res.status(400).json({
+        error:err
+      })
+    }return res.status(200).json({
+       
+      success:true,
+      lectureMaterial:lectureMaterial
+    })
+
+  })
+})
+
 
 // router.post("/", validater, UserController.userLogin);
 // router.post("/createEmployee", auth, EmpTypeValidater, UserController.createEmployeData);

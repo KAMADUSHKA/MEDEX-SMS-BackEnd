@@ -29,11 +29,12 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowType = ['image/jpeg', 'image/png'];
+  // Updated to allow PDF files
+  const allowType = ['image/jpeg', 'image/png', 'application/pdf'];
   if (allowType.includes(file.mimetype)) {
     cb(null, true); // Accept
   } else {
-    cb(new Error('Only JPG and PNG files are allowed!'), false);
+    cb(new Error('Only JPG, PNG, and PDF files are allowed!'), false);
   }
 };
 

@@ -26,10 +26,6 @@ const paidStudentSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  studentName: {
-    type: String,
-    required: true,
-  },
   email: {
     type: String,
     required: true,
@@ -48,7 +44,7 @@ const courseResourceSchema = new mongoose.Schema({
   },
   paidStudents: {
     type: [paidStudentSchema],
-    required: true,
+    // required: true,
   },
 });
 
