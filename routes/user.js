@@ -30,6 +30,7 @@ const bcrypt = require("bcryptjs");
 const ZoomOnlineSessions = require("../model/ZoomOnlineSessions");
 // const ZoomRecodings = require("../model/ZoomRecordings");
 const ZoomRecordings = require("../model/zoomRecordings");
+const CourseResource = require("../model/lectureMaterial")
 
 ////////////////////////
 /////admin main
@@ -45,7 +46,7 @@ router.post("/User/adminLogin", async (req, res, next) => {
     if (req.body.password !== userTruePassword)
       throw new Error("User Password is invalid");
     const accountStatus = userTrue.account_lock;
-    const isAdmin = userTrue.isAdmin
+    const isAdmin = userTrue.isAdmin;
 
     if (accountStatus == 0) {
       const token = jwt.sign(
@@ -53,14 +54,14 @@ router.post("/User/adminLogin", async (req, res, next) => {
         "your_secret_key", // Secret key (use a strong, secure key and keep it private)
         { expiresIn: "1h" } // Optional: Token expiration time
       );
-      console.log("token is:",token)
+      console.log("token is:", token);
       res.status(200).json({
         status: "Success",
         Comment: "User Login Authentication!",
         token: token,
         data: {
           email: req.body.email,
-          role:isAdmin
+          role: isAdmin,
         },
       });
     }
@@ -74,13 +75,13 @@ router.post("/User/adminLogin", async (req, res, next) => {
       },
     });
   }
-}); 
+});
 
 /////update pasword
 router.post("/User/passwordUpdate", async (req, res, next) => {
   try {
     const user = await Admin.findOne({ email: req.body.email });
-    const updatedPassword = req.body.password
+    const updatedPassword = req.body.password;
 
     console.log("my user is", req.body.email);
     console.log("find user is", user);
@@ -90,16 +91,14 @@ router.post("/User/passwordUpdate", async (req, res, next) => {
 
     user.password = updatedPassword;
     await user.save();
-    
 
-      res.status(200).json({
-        status: "Success",
-        Comment: "User password update successfully!",
-        data: {
-          email: req.body.email,
-        },
-      });
-    
+    res.status(200).json({
+      status: "Success",
+      Comment: "User password update successfully!",
+      data: {
+        email: req.body.email,
+      },
+    });
   } catch (error) {
     console.log("Error during login:", error);
     res.status(400).json({
@@ -110,15 +109,14 @@ router.post("/User/passwordUpdate", async (req, res, next) => {
       },
     });
   }
-}); 
+});
 
 /////Delet user
 router.delete("/User/delete", async (req, res, next) => {
   try {
-
-    console.log("wwwwwwwwwwwwwwww",req.body)
+    console.log("wwwwwwwwwwwwwwww", req.body);
     const user = await Admin.findOne({ email: req.body.email });
-    const Password = req.body.password
+    const Password = req.body.password;
 
     console.log("my user is", req.body.email);
     console.log("find user is", user);
@@ -130,16 +128,14 @@ router.delete("/User/delete", async (req, res, next) => {
       throw new Error("User Password is invalid");
 
     await Admin.deleteOne({ email: req.body.email });
-   
 
-      res.status(200).json({
-        status: "Success",
-        Comment: "User Delete successfully!",
-        data: {
-          email: req.body.email,
-        },
-      });
-    
+    res.status(200).json({
+      status: "Success",
+      Comment: "User Delete successfully!",
+      data: {
+        email: req.body.email,
+      },
+    });
   } catch (error) {
     console.log("Error during login:", error);
     res.status(400).json({
@@ -151,8 +147,6 @@ router.delete("/User/delete", async (req, res, next) => {
     });
   }
 });
-
-
 
 ///User Post
 router.post("/AdminUserCreation", (req, res) => {
@@ -170,7 +164,6 @@ router.post("/AdminUserCreation", (req, res) => {
   });
 });
 
-
 //////////////////////////////////////////////////
 
 //get
@@ -187,8 +180,6 @@ router.get("/post", (req, res) => {
     });
   });
 });
-
-
 
 //post update
 router.put("/post/update/:id", (req, res) => {
@@ -295,7 +286,6 @@ router.put("/course/update/:id", (req, res) => {
   );
 });
 
-
 ///// course update
 router.post("/courseData/update/:id", (req, res) => {
   Course.findByIdAndUpdate(
@@ -315,8 +305,6 @@ router.post("/courseData/update/:id", (req, res) => {
     }
   );
 });
-
-
 
 ////////////////////////////////////////////////////////
 ///// Zoom Sessions /////
@@ -352,38 +340,39 @@ router.delete("/zoomSession/subject/delete/:id", (req, res) => {
 });
 
 // zoom session lecture delete
-router.delete("/zoomSession/lecture/delete/:subjectId/:lectureId", (req, res) => {
-  const { subjectId, lectureId } = req.params;
+router.delete(
+  "/zoomSession/lecture/delete/:subjectId/:lectureId",
+  (req, res) => {
+    const { subjectId, lectureId } = req.params;
 
-  ZoomOnlineSessions.findByIdAndUpdate(
-    subjectId,
-    {
-      $pull: {
-        links: { _id: lectureId }, 
+    ZoomOnlineSessions.findByIdAndUpdate(
+      subjectId,
+      {
+        $pull: {
+          links: { _id: lectureId },
+        },
       },
-    },
-    { new: true }, 
-    (err, updatedSubject) => {
-      if (err) {
-        return res.status(400).json({
-          message: "Failed to delete the link",
-          err,
+      { new: true },
+      (err, updatedSubject) => {
+        if (err) {
+          return res.status(400).json({
+            message: "Failed to delete the link",
+            err,
+          });
+        }
+        if (!updatedSubject) {
+          return res.status(404).json({
+            message: "Subject or link not found",
+          });
+        }
+        return res.json({
+          message: "Link deleted successfully",
+          updatedSubject,
         });
       }
-      if (!updatedSubject) {
-        return res.status(404).json({
-          message: "Subject or link not found",
-        });
-      }
-      return res.json({
-        message: "Link deleted successfully",
-        updatedSubject,
-      });
-    }
-  );
-});
-
-
+    );
+  }
+);
 
 ///// Zoom Sessions update /////
 router.post("/OnlineSessions/zoomLink/:id", async (req, res) => {
@@ -414,14 +403,11 @@ router.post("/OnlineSessions/zoomLink/:id", async (req, res) => {
       data: updatedSubject,
     });
   } catch (error) {
-    return res.status(500).json({ 
-
-      error: error.message 
+    return res.status(500).json({
+      error: error.message,
     });
   }
 });
-
-
 
 ///// zoom session get//////
 router.get("/OnlineSessions/zoom", (req, res) => {
@@ -478,10 +464,10 @@ router.delete("/recording/lecture/delete/:subjectId/:lectureId", (req, res) => {
     subjectId,
     {
       $pull: {
-        links: { _id: lectureId }, 
+        links: { _id: lectureId },
       },
     },
-    { new: true }, 
+    { new: true },
     (err, updatedSubject) => {
       if (err) {
         return res.status(400).json({
@@ -501,7 +487,6 @@ router.delete("/recording/lecture/delete/:subjectId/:lectureId", (req, res) => {
     }
   );
 });
-
 
 ///// Zoom Recording update /////
 router.post("/OnlineSessions/zoomRecording/:id", async (req, res) => {
@@ -532,16 +517,15 @@ router.post("/OnlineSessions/zoomRecording/:id", async (req, res) => {
       data: updatedSubject,
     });
   } catch (error) {
-    return res.status(500).json({ 
-
-      error: error.message 
+    return res.status(500).json({
+      error: error.message,
     });
   }
 });
 
 ///// zoom session get//////
 router.get("/OnlineRecordings/zoom", (req, res) => {
-  ZoomRecordings.find().exec((err, ZoomRecordings ) => {
+  ZoomRecordings.find().exec((err, ZoomRecordings) => {
     if (err) {
       return res.status(400).json({
         error: err,
@@ -554,7 +538,57 @@ router.get("/OnlineRecordings/zoom", (req, res) => {
   });
 });
 
+////////////////////
+////// Resources
+router.post('/resources/upload', upload.single('file'), async (req, res) => {
+  try {
+    // Check if a file was uploaded
+    if (!req.file) {
+      return res.status(400).json({ error: 'File not uploaded!' });
+    }
 
+    // Extract metadata from the request body
+    const { courseName, materialName, materialType, materialDescription } = req.body;
+
+    // Validate required fields
+    if (!courseName || !materialName || !materialType || !materialDescription) {
+      return res.status(400).json({ error: 'All fields are required!' });
+    }
+
+    // Create a new lecture material object
+    const lectureMaterial = {
+      materialName,
+      materialType,
+      materialDescription,
+      materialLink: req.file.path, // Save the file path
+    };
+
+    // Check if the course already exists
+    let courseResource = await CourseResource.findOne({ courseName });
+
+    if (courseResource) {
+      // If course exists, add the new lecture material
+      courseResource.lectureMaterials.push(lectureMaterial);
+    } else {
+      // Create a new course resource if it doesn't exist
+      courseResource = new CourseResource({
+        courseName,
+        lectureMaterials: [lectureMaterial],
+        paidStudents: [], // Initialize an empty array for paid students
+      });
+    }
+
+    // Save to the database
+    await courseResource.save();
+
+    res.status(200).json({
+      message: 'Lecture material uploaded and saved successfully!',
+      courseResource,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'An error occurred', details: err.message });
+  }
+});
 
 // router.post("/", validater, UserController.userLogin);
 // router.post("/createEmployee", auth, EmpTypeValidater, UserController.createEmployeData);
