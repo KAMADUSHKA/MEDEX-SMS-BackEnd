@@ -621,7 +621,6 @@ router.post('/resources/paid-students', async (req, res) => {
     // Create a new student object
     const newStudent = {
       studentId,
-      studentName,
       email,
     };
 
