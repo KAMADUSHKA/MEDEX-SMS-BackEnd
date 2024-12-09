@@ -34,6 +34,7 @@ const CourseResource = require("../model/lectureMaterial");
 const lectureMaterial = require("../model/lectureMaterial");
 const Exam = require('../model/Exam');
 const PaymentPlans = require("../model/PaymentPlans");
+const CourseEnrollment = require("../model/PaidStudent")
 
 
 ////////////////////////
@@ -650,7 +651,7 @@ router.post('/resources/upload', upload.single('file'), async (req, res) => {
       materialType,
       materialDescription,
       // materialLink: path.basename(req.file.path),
-      materialLink: req.file.filename, // Save the file path
+      PaymentPlanMaterialLink: req.file.filename, // Save the file path
     };
 
     // Check if the course already exists
@@ -788,12 +789,71 @@ router.delete("/Payment/Plans/delete/:id", (req, res) => {
     }
     return res.json({
       message: "Deleted successfully",
-      deletData: deletedPaymentPlans,
+      deleteData: deletedPaymentPlans,
     });
   });
 });
 
 
+/////////////////////////////////////////////////
+////// course enrolment
+router.post('/Payment/upload', upload.single('file'), async (req, res) => {
+  try {
+    // Check if a file was uploaded
+    if (!req.file) {
+      return res.status(400).json({ error: 'File not uploaded!' });
+    }
+    // Extract metadata from the request body
+    const { courseName, paymentPlans, studentId } = req.body;
+
+    if (!courseName || !paymentPlans || !studentId) {
+      return res.status(400).json({ error: 'All fields are required!' });
+    }
+    // Create a paid student object
+    const paidStudent = {
+      studentId,
+      paymentPlans,
+      slipLink: req.file.filename, // Store the file name as slipLink
+    };
+    // Check if the course exists
+    let courseEnrollment = await CourseEnrollment.findOne({ courseName });
+    if (courseEnrollment) {
+      // If the course exists, add the paid student
+      courseEnrollment.paidStudents.push(paidStudent);
+    } else {
+      // Create a new course enrollment if it doesn't exist
+      courseEnrollment = new CourseEnrollment({
+        courseName,
+        paidStudents: [paidStudent],
+      });
+    }
+
+    // Save the updated or new course enrollment
+    await courseEnrollment.save();
+
+    res.status(200).json({
+      message: 'Payment details uploaded and saved successfully!',
+      data: courseEnrollment,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'An error occurred', details: err.message });
+  }
+});
+
+///// get course enrolment//////
+router.get("/Payment/upload", (req, res) => {
+  CourseEnrollment.find().exec((err, CourseEnrollment) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      CoursesData: CourseEnrollment,
+    });
+  });
+});
 
 
 // router.post("/", validater, UserController.userLogin);
