@@ -32,7 +32,8 @@ const ZoomOnlineSessions = require("../model/ZoomOnlineSessions");
 const ZoomRecordings = require("../model/zoomRecordings");
 const CourseResource = require("../model/lectureMaterial");
 const lectureMaterial = require("../model/lectureMaterial");
-const Exam = require('../model/Exam')
+const Exam = require('../model/Exam');
+const PaymentPlans = require("../model/PaymentPlans");
 
 
 ////////////////////////
@@ -745,6 +746,54 @@ router.get("/resources",(req, res) => {
 
   })
 })
+//////////////////////////////////////////
+////////////Available Payment Plans
+router.post("/Payment/Plans", (req, res) => {
+  let paymentPlans = new PaymentPlans(req.body);
+  paymentPlans.save((err) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    return res.status(200).json({
+      success: "Payment Plans saved successfully",
+    });
+  });
+});
+
+///// get Available Payment Plans//////
+router.get("/Payment/Plans", (req, res) => {
+  PaymentPlans.find().exec((err, PaymentPlans) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      CoursesData: PaymentPlans,
+    });
+  });
+});
+
+///////// delete Available Payment Plans
+router.delete("/Payment/Plans/delete/:id", (req, res) => {
+  PaymentPlans.findByIdAndRemove(req.params.id, (err, deletedPaymentPlans) => {
+    if (err) {
+      return res.status(400).json({
+        message: "Delete unsuccessful",
+        err,
+      });
+    }
+    return res.json({
+      message: "Deleted successfully",
+      deletData: deletedPaymentPlans,
+    });
+  });
+});
+
+
 
 
 // router.post("/", validater, UserController.userLogin);
