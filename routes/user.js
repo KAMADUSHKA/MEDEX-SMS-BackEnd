@@ -641,13 +641,15 @@ router.post('/resources/upload', upload.single('file'), async (req, res) => {
     // if (!courseName || !materialName || !materialType || !materialDescription) {
     //   return res.status(400).json({ error: 'All fields are required!' });
     // }
-
+    
     // Create a new lecture material object
+    console.log("aaaaaaaaaaaaaaaaaaaaaa",req.file.filename)
     const lectureMaterial = {
       materialName,
       materialType,
       materialDescription,
-      materialLink: req.file.path, // Save the file path
+      // materialLink: path.basename(req.file.path),
+      materialLink: req.file.filename, // Save the file path
     };
 
     // Check if the course already exists
@@ -707,7 +709,6 @@ router.post('/resources/paid-students', async (req, res) => {
     // Create a new student object
     const newStudent = {
       studentId,
-      studentName,
       email,
     };
 
