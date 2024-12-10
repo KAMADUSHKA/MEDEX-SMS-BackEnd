@@ -2,39 +2,37 @@ const mongoose = require("mongoose");
 
 // Define the schema for exam results
 const ExamSchema = new mongoose.Schema({
-    courseName: {
+    course: {
         type: String,
-        required: [true, "Course Name is required"],
+        required: [true, "Course is required"],
     },
-    studentId: {
+    subject: {
         type: String,
-        required: [true, "Student ID is required"],
+        required: [true, "Subject is required"],
+    },
+    batch: {
+        type: String,
+        required: [true, "Batch is required"],
     },
     studentName: {
         type: String,
         required: [true, "Student Name is required"],
     },
-    email: {
+    regNo: {
         type: String,
-        required: [true, "Email is required"],
-        match: [/\S+@\S+\.\S+/, "Email is invalid"], // Email validation
+        required: [true, "Registration Number is required"],
     },
-    marks: {
-        type: Number,
-        required: [true, "Marks are required"],
-        min: [0, "Marks cannot be less than 0"],
-        max: [100, "Marks cannot be more than 100"],
-    },
-    grade: {
+    results: {
         type: String,
-        enum: ["A", "B", "C", "D", "F", "NA"], // Grade options
-        default: "NA",
+        enum: ["Pass", "Fail", "Pending"], // Result options
+        default: "Pending",
     },
     createdAt: {
         type: Date,
         default: Date.now,
     },
 });
+
 
 // Create the model for exam results
 const Exam = mongoose.model("Exam", ExamSchema);

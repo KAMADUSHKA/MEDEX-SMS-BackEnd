@@ -39,21 +39,22 @@ const CourseEnrollment = require("../model/PaidStudent")
 
 ////////////////////////
 //add exam
+// Add a new exam result
 router.post("/exam-results/add", async (req, res) => {
   try {
-    const { courseName, studentId, studentName, email, marks, grade } = req.body;
+    const { course, subject, batch, studentName, regNo, results } = req.body;
 
-    if (!courseName || !studentId || !studentName || !email || marks == null) {
+    if (!course || !subject || !batch || !studentName || !regNo) {
       return res.status(400).json({ error: "All fields are required!" });
     }
 
     const newResult = new Exam({
-      courseName,
-      studentId,
+      course,
+      subject,
+      batch,
       studentName,
-      email,
-      marks,
-      grade,
+      regNo,
+      results,
     });
 
     await newResult.save();
@@ -64,17 +65,48 @@ router.post("/exam-results/add", async (req, res) => {
   }
 });
 
-//edit exam
-
-router.put("/exam-results/edit/:id", async (req, res) => {
+// View all exam results
+router.get("/exam-results", async (req, res) => {
   try {
-    const { id } = req.params;
-    const updatedData = req.body;
+    const results = await Exam.find();
 
-    const updatedResult = await ExamResult.findByIdAndUpdate(id, updatedData, {
-      new: true,
-      runValidators: true,
+    res.status(200).json({
+      message: "Exam results retrieved successfully!",
+      data: results,
     });
+  } catch (err) {
+    res.status(500).json({ error: "An error occurred", details: err.message });
+  }
+});
+
+// Get an exam result by ID
+router.get("/exam-results/:id", async (req, res) => {
+  try {
+    const result = await Exam.findById(req.params.id);
+
+    if (!result) {
+      return res.status(404).json({ error: "Exam result not found!" });
+    }
+
+    res.status(200).json({
+      message: "Exam result retrieved successfully!",
+      data: result,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "An error occurred", details: err.message });
+  }
+});
+
+// Update an exam result by ID
+router.put("/exam-results/update/:id", async (req, res) => {
+  try {
+    const { course, subject, batch, studentName, regNo, results } = req.body;
+
+    const updatedResult = await Exam.findByIdAndUpdate(
+      req.params.id,
+      { course, subject, batch, studentName, regNo, results },
+      { new: true, runValidators: true }
+    );
 
     if (!updatedResult) {
       return res.status(404).json({ error: "Exam result not found!" });
@@ -89,37 +121,24 @@ router.put("/exam-results/edit/:id", async (req, res) => {
   }
 });
 
-//delete exam
+// Delete an exam result by ID
 router.delete("/exam-results/delete/:id", async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const deletedResult = await ExamResult.findByIdAndDelete(id);
+    const deletedResult = await Exam.findByIdAndDelete(req.params.id);
 
     if (!deletedResult) {
       return res.status(404).json({ error: "Exam result not found!" });
     }
 
-    res.status(200).json({ message: "Exam result deleted successfully!" });
-  } catch (err) {
-    res.status(500).json({ error: "An error occurred", details: err.message });
-  }
-});
-
-
-//exam view
-router.get("/exam-results", async (req, res) => {
-  try {
-    const results = await ExamResult.find();
-
     res.status(200).json({
-      message: "Exam results retrieved successfully!",
-      data: results,
+      message: "Exam result deleted successfully!",
+      data: deletedResult,
     });
   } catch (err) {
     res.status(500).json({ error: "An error occurred", details: err.message });
   }
 });
+
 
 
 /////admin main
