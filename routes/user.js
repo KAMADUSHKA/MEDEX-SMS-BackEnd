@@ -770,7 +770,7 @@ router.get("/resources",(req, res) => {
 ////////////Available Payment Plans
 router.post("/Payment/Plans", (req, res) => {
   let paymentPlans = new PaymentPlans(req.body);
-  paymentPlans.save((err) => {
+  paymentPlans.save((err, savedPlan) => {
     if (err) {
       return res.status(400).json({
         error: err,
@@ -778,6 +778,7 @@ router.post("/Payment/Plans", (req, res) => {
     }
     return res.status(200).json({
       success: "Payment Plans saved successfully",
+      PaymentPlans: savedPlan
     });
   });
 });
@@ -792,7 +793,7 @@ router.get("/Payment/Plans", (req, res) => {
     }
     return res.status(200).json({
       success: true,
-      CoursesData: PaymentPlans,
+      paymentPlans: PaymentPlans,
     });
   });
 });
