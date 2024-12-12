@@ -34,7 +34,8 @@ const CourseResource = require("../model/lectureMaterial");
 const lectureMaterial = require("../model/lectureMaterial");
 const Exam = require('../model/Exam');
 const PaymentPlans = require("../model/PaymentPlans");
-const CourseEnrollment = require("../model/PaidStudent")
+const CourseEnrollment = require("../model/PaidStudent");
+const ExamResults = require("../model/ExamResults");
 
 
 ////////////////////////
@@ -874,6 +875,129 @@ router.get("/Payment/upload", (req, res) => {
     });
   });
 });
+
+
+///////////////////////////////////////////////////////////////////
+///////////////////////Exam Results subject creation
+// POST route to create or add a subject to a course
+
+router.post('/courses/subjects', async (req, res) => {
+  try {
+    const { courseName, subjectName } = req.body;
+
+    // Validate required fields
+    if (!courseName || !subjectName) {
+      return res.status(400).json({ error: 'Course name and subject name are required!' });
+    }
+
+    // Find the course by name
+    let course = await ExamResults.findOne({ courseName });
+
+    if (!course) {
+      // If the course doesn't exist, create it with the new subject
+      course = new ExamResults({
+        courseName,
+        Subjects: [
+          {
+            subjectName,
+            StudentResults: [], // Initialize with an empty array
+          },
+        ],
+      });
+    } else {
+      // If the course exists, check if the subject already exists
+      const subjectExists = course.Subjects.some(
+        (subject) => subject.subjectName === subjectName
+      );
+
+      if (subjectExists) {
+        return res.status(400).json({ error: 'Subject already exists in this course!' });
+      }
+
+      // Add the new subject to the course
+      course.Subjects.push({
+        subjectName,
+        StudentResults: [],
+      });
+    }
+
+    // Save the course
+    await course.save();
+
+    res.status(200).json({
+      message: 'Course and subject created/updated successfully!',
+      data: course,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'An error occurred', details: err.message });
+  }
+});
+
+///////////////////////result creation
+router.post('/courses/subjects/studentResult', async (req, res) => {
+  try {
+    const { courseName, subjectName, studentId, result } = req.body;
+
+    // Validate required fields
+    if (!courseName || !subjectName || !studentId || !result) {
+      return res.status(400).json({ error: 'All fields are required!' });
+    }
+
+    // Find the course by name
+    const course = await ExamResults.findOne({ courseName });
+
+    if (!course) {
+      return res.status(404).json({ error: 'Course not found!' });
+    }
+
+    // Find the subject within the course
+    const subject = course.Subjects.find(
+      (sub) => sub.subjectName === subjectName
+    );
+
+    if (!subject) {
+      return res.status(404).json({ error: 'Subject not found in the course!' });
+    }
+
+    // Check if the student result already exists
+    const studentExists = subject.StudentResults.some(
+      (student) => student.studentId === studentId
+    );
+
+    if (studentExists) {
+      return res.status(400).json({ error: 'Student result already exists!' });
+    }
+
+    // Add the new student result
+    subject.StudentResults.push({ studentId, Result: result });
+
+    // Save the course
+    await course.save();
+
+    res.status(200).json({
+      message: 'Student result added successfully!',
+      data: course,
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'An error occurred', details: err.message });
+  }
+});
+
+///// get course result//////
+router.get("/courses/subjects/studentResult", (req, res) => {
+  ExamResults.find().exec((err, ExamResults) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      CoursesData: ExamResults,
+    });
+  });
+});
+
 
 
 // router.post("/", validater, UserController.userLogin);
