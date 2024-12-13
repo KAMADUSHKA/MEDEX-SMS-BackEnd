@@ -32,11 +32,10 @@ const ZoomOnlineSessions = require("../model/ZoomOnlineSessions");
 const ZoomRecordings = require("../model/zoomRecordings");
 const CourseResource = require("../model/lectureMaterial");
 const lectureMaterial = require("../model/lectureMaterial");
-const Exam = require('../model/Exam');
+const Exam = require("../model/Exam");
 const PaymentPlans = require("../model/PaymentPlans");
 const CourseEnrollment = require("../model/PaidStudent");
 const ExamResults = require("../model/ExamResults");
-
 
 ////////////////////////
 //add exam
@@ -139,8 +138,6 @@ router.delete("/exam-results/delete/:id", async (req, res) => {
     res.status(500).json({ error: "An error occurred", details: err.message });
   }
 });
-
-
 
 /////admin main
 router.post("/User/adminLogin", async (req, res, next) => {
@@ -649,23 +646,24 @@ router.get("/OnlineRecordings/zoom", (req, res) => {
 
 ////////////////////
 ////// Resources
-router.post('/resources/upload', upload.single('file'), async (req, res) => {
+router.post("/resources/upload", upload.single("file"), async (req, res) => {
   try {
     // Check if a file was uploaded
     if (!req.file) {
-      return res.status(400).json({ error: 'File not uploaded!' });
+      return res.status(400).json({ error: "File not uploaded!" });
     }
 
     // Extract metadata from the request body
-    const { courseName, materialName, materialType, materialDescription } = req.body;
+    const { courseName, materialName, materialType, materialDescription } =
+      req.body;
 
     // Validate required fields
     // if (!courseName || !materialName || !materialType || !materialDescription) {
     //   return res.status(400).json({ error: 'All fields are required!' });
     // }
-    
+
     // Create a new lecture material object
-    console.log("aaaaaaaaaaaaaaaaaaaaaa",req.file.filename)
+    console.log("aaaaaaaaaaaaaaaaaaaaaa", req.file.filename);
     const lectureMaterial = {
       materialName,
       materialType,
@@ -693,30 +691,30 @@ router.post('/resources/upload', upload.single('file'), async (req, res) => {
     await courseResource.save();
 
     res.status(200).json({
-      message: 'Lecture material uploaded and saved successfully!',
-      data:courseResource,
+      message: "Lecture material uploaded and saved successfully!",
+      data: courseResource,
     });
   } catch (err) {
-    res.status(500).json({ error: 'An error occurred', details: err.message });
+    res.status(500).json({ error: "An error occurred", details: err.message });
   }
 });
 
-//////////////// paid student add 
-router.post('/resources/paid-students', async (req, res) => {
+//////////////// paid student add
+router.post("/resources/paid-students", async (req, res) => {
   try {
     // Extract data from the request body
     const { courseName, studentId, email } = req.body;
 
     // Validate required fields
     if (!courseName || !studentId || !email) {
-      return res.status(400).json({ error: 'All fields are required!' });
+      return res.status(400).json({ error: "All fields are required!" });
     }
 
     // Find the course by name
     let courseResource = await CourseResource.findOne({ courseName });
 
     if (!courseResource) {
-      return res.status(404).json({ error: 'Course not found!' });
+      return res.status(404).json({ error: "Course not found!" });
     }
 
     // Check if the student already exists
@@ -725,7 +723,7 @@ router.post('/resources/paid-students', async (req, res) => {
     );
 
     if (studentExists) {
-      return res.status(400).json({ error: 'Student is already added!' });
+      return res.status(400).json({ error: "Student is already added!" });
     }
 
     // Create a new student object
@@ -741,32 +739,30 @@ router.post('/resources/paid-students', async (req, res) => {
     await courseResource.save();
 
     res.status(200).json({
-      message: 'Student added successfully!',
+      message: "Student added successfully!",
       data: courseResource,
     });
   } catch (err) {
-    res.status(500).json({ error: 'An error occurred', details: err.message });
+    res.status(500).json({ error: "An error occurred", details: err.message });
   }
 });
 
-
 /// get Resources
-router.get("/resources",(req, res) => {
+router.get("/resources", (req, res) => {
   lectureMaterial.find().exec((err, lectureMaterial) => {
     // console.log("11111111")
-    if(err) {
+    if (err) {
       // console.log("111111112222222222")
       return res.status(400).json({
-        error:err
-      })
-    }return res.status(200).json({
-       
-      success:true,
-      lectureMaterial:lectureMaterial
-    })
-
-  })
-})
+        error: err,
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      lectureMaterial: lectureMaterial,
+    });
+  });
+});
 //////////////////////////////////////////
 ////////////Available Payment Plans
 router.post("/Payment/Plans", (req, res) => {
@@ -779,7 +775,7 @@ router.post("/Payment/Plans", (req, res) => {
     }
     return res.status(200).json({
       success: "Payment Plans saved successfully",
-      PaymentPlans: savedPlan
+      PaymentPlans: savedPlan,
     });
   });
 });
@@ -815,20 +811,19 @@ router.delete("/Payment/Plans/delete/:id", (req, res) => {
   });
 });
 
-
 /////////////////////////////////////////////////
 ////// course enrolment
-router.post('/Payment/upload', upload.single('file'), async (req, res) => {
+router.post("/Payment/upload", upload.single("file"), async (req, res) => {
   try {
     // Check if a file was uploaded
     if (!req.file) {
-      return res.status(400).json({ error: 'File not uploaded!' });
+      return res.status(400).json({ error: "File not uploaded!" });
     }
     // Extract metadata from the request body
     const { courseName, paymentPlans, studentId } = req.body;
 
     if (!courseName || !paymentPlans || !studentId) {
-      return res.status(400).json({ error: 'All fields are required!' });
+      return res.status(400).json({ error: "All fields are required!" });
     }
     // Create a paid student object
     const paidStudent = {
@@ -853,11 +848,11 @@ router.post('/Payment/upload', upload.single('file'), async (req, res) => {
     await courseEnrollment.save();
 
     res.status(200).json({
-      message: 'Payment details uploaded and saved successfully!',
+      message: "Payment details uploaded and saved successfully!",
       data: courseEnrollment,
     });
   } catch (err) {
-    res.status(500).json({ error: 'An error occurred', details: err.message });
+    res.status(500).json({ error: "An error occurred", details: err.message });
   }
 });
 
@@ -876,18 +871,19 @@ router.get("/Payment/upload", (req, res) => {
   });
 });
 
-
 ///////////////////////////////////////////////////////////////////
 ///////////////////////Exam Results subject creation
 // POST route to create or add a subject to a course
 
-router.post('/courses/subjects', async (req, res) => {
+router.post("/courses/subjects", async (req, res) => {
   try {
     const { courseName, subjectName } = req.body;
 
     // Validate required fields
     if (!courseName || !subjectName) {
-      return res.status(400).json({ error: 'Course name and subject name are required!' });
+      return res
+        .status(400)
+        .json({ error: "Course name and subject name are required!" });
     }
 
     // Find the course by name
@@ -911,7 +907,9 @@ router.post('/courses/subjects', async (req, res) => {
       );
 
       if (subjectExists) {
-        return res.status(400).json({ error: 'Subject already exists in this course!' });
+        return res
+          .status(400)
+          .json({ error: "Subject already exists in this course!" });
       }
 
       // Add the new subject to the course
@@ -925,29 +923,29 @@ router.post('/courses/subjects', async (req, res) => {
     await course.save();
 
     res.status(200).json({
-      message: 'Course and subject created/updated successfully!',
+      message: "Course and subject created/updated successfully!",
       data: course,
     });
   } catch (err) {
-    res.status(500).json({ error: 'An error occurred', details: err.message });
+    res.status(500).json({ error: "An error occurred", details: err.message });
   }
 });
 
 ///////////////////////result creation
-router.post('/courses/subjects/studentResult', async (req, res) => {
+router.post("/courses/subjects/studentResult", async (req, res) => {
   try {
     const { courseName, subjectName, studentId, result } = req.body;
 
     // Validate required fields
     if (!courseName || !subjectName || !studentId || !result) {
-      return res.status(400).json({ error: 'All fields are required!' });
+      return res.status(400).json({ error: "All fields are required!" });
     }
 
     // Find the course by name
     const course = await ExamResults.findOne({ courseName });
 
     if (!course) {
-      return res.status(404).json({ error: 'Course not found!' });
+      return res.status(404).json({ error: "Course not found!" });
     }
 
     // Find the subject within the course
@@ -956,16 +954,18 @@ router.post('/courses/subjects/studentResult', async (req, res) => {
     );
 
     if (!subject) {
-      return res.status(404).json({ error: 'Subject not found in the course!' });
+      return res
+        .status(404)
+        .json({ error: "Subject not found in the course!" });
     }
 
     // Check if the student result already exists
     const studentExists = subject.StudentResults.some(
       (student) => student.studentId === studentId
     );
-
+    console.log("check ........... 4:" )
     if (studentExists) {
-      return res.status(400).json({ error: 'Student result already exists!' });
+      return res.status(400).json({ error: "Student result already exists!" });
     }
 
     // Add the new student result
@@ -973,13 +973,14 @@ router.post('/courses/subjects/studentResult', async (req, res) => {
 
     // Save the course
     await course.save();
-
+    console.log("check ........... 5:" )
     res.status(200).json({
-      message: 'Student result added successfully!',
+      message: "Student result added successfully!",
       data: course,
     });
   } catch (err) {
-    res.status(500).json({ error: 'An error occurred', details: err.message });
+    console.log("error ...........:", err.message)
+    res.status(500).json({ error: "An error occurred", details: err.message });
   }
 });
 
@@ -997,8 +998,6 @@ router.get("/courses/subjects/studentResult", (req, res) => {
     });
   });
 });
-
-
 
 // router.post("/", validater, UserController.userLogin);
 // router.post("/createEmployee", auth, EmpTypeValidater, UserController.createEmployeData);
