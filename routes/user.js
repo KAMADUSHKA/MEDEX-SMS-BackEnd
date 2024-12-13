@@ -963,7 +963,7 @@ router.post("/courses/subjects/studentResult", async (req, res) => {
     const studentExists = subject.StudentResults.some(
       (student) => student.studentId === studentId
     );
-    console.log("check ........... 4:" )
+    console.log("check ........... 4 : " )
     if (studentExists) {
       return res.status(400).json({ error: "Student result already exists!" });
     }
