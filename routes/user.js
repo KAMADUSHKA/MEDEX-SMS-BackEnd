@@ -669,7 +669,7 @@ router.post("/resources/upload", upload.single("file"), async (req, res) => {
       materialType,
       materialDescription,
       // materialLink: path.basename(req.file.path),
-      PaymentPlanMaterialLink: req.file.filename, // Save the file path
+      materialLink: req.file.filename, // Save the file path
     };
 
     // Check if the course already exists
